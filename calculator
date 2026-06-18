@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OstoVet Metabolic Calculator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <!-- Header Navigation -->
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="bg-white p-1 rounded-md">
+                    <span class="text-blue-900 font-extrabold text-lg tracking-tight">OstoVet<sup>®</sup></span>
+                </div>
+                <span class="text-xs font-semibold text-blue-200 tracking-wider uppercase block">Beyond Calcium</span>
+            </div>
+            <div class="bg-blue-800/50 px-2 py-1 rounded text-[10px] font-bold border border-blue-700/50">
+                FIELD VER. 2.0
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-md mx-auto px-4 py-6 pb-24">
+        
+        <!-- App Description Card -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-6">
+            <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                📊 Metabolic Feed Auditor
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Evaluate daily dry-matter mineral intake against actual systemic requirements to expose the clinical "Absorption Gap".
+            </p>
+        </div>
+
+        <!-- Inputs Section -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-6 space-y-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-2">1. Enter Animal & Feed Data</h2>
+            
+            <!-- Cow Weight Input -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1 flex justify-between">
+                    <span>Cow Weight (kg)</span>
+                    <span id="weight-val" class="text-blue-600 font-bold">500 kg</span>
+                </label>
+                <div class="flex gap-3">
+                    <input type="range" id="weight" min="300" max="800" step="10" value="500" 
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                        oninput="calculateMetabolics()">
+                    <input type="number" id="weight-num" value="500" min="300" max="800"
+                        class="w-20 px-2 py-1 text-sm text-center border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        oninput="syncInput('weight')">
+                </div>
+            </div>
+
+            <!-- Daily Milk Yield Input -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1 flex justify-between">
+                    <span>Daily Milk Yield (Liters)</span>
+                    <span id="yield-val" class="text-blue-600 font-bold">20 L</span>
+                </label>
+                <div class="flex gap-3">
+                    <input type="range" id="yield" min="5" max="50" step="1" value="20" 
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                        oninput="calculateMetabolics()">
+                    <input type="number" id="yield-num" value="20" min="5" max="50"
+                        class="w-20 px-2 py-1 text-sm text-center border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        oninput="syncInput('yield')">
+                </div>
+            </div>
+
+            <!-- Concentrate Input -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1 flex justify-between">
+                    <span>Daily Concentrate Intake (Dry Matter kg)</span>
+                    <span id="conc-val" class="text-blue-600 font-bold">9 kg</span>
+                </label>
+                <div class="flex gap-3">
+                    <input type="range" id="conc" min="1" max="15" step="0.5" value="9" 
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                        oninput="calculateMetabolics()">
+                    <input type="number" id="conc-num" value="9" min="1" max="15" step="0.5"
+                        class="w-20 px-2 py-1 text-sm text-center border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        oninput="syncInput('conc')">
+                </div>
+            </div>
+
+            <!-- Fodder Input -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1 flex justify-between">
+                    <span>Daily Fodder Intake (Dry Matter kg)</span>
+                    <span id="fodder-val" class="text-blue-600 font-bold">15 kg</span>
+                </label>
+                <div class="flex gap-3">
+                    <input type="range" id="fodder" min="5" max="30" step="0.5" value="15" 
+                        class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                        oninput="calculateMetabolics()">
+                    <input type="number" id="fodder-num" value="15" min="5" max="30" step="0.5"
+                        class="w-20 px-2 py-1 text-sm text-center border border-slate-200 rounded-lg font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        oninput="syncInput('fodder')">
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Outputs -->
+        <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-6 space-y-4">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400">2. Evaluation Dashboard</h2>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Systemic Demand -->
+                <div class="bg-blue-50/50 border border-blue-100/50 p-4 rounded-xl">
+                    <span class="text-[10px] font-bold text-slate-500 block uppercase">Systemic Demand</span>
+                    <div class="text-2xl font-black text-blue-900 mt-1" id="required-val-display">0g</div>
+                    <span class="text-[9px] text-slate-500 block mt-1">(Maintenance & Milk)</span>
+                </div>
+
+                <!-- Feed Supply -->
+                <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                    <span class="text-[10px] font-bold text-slate-500 block uppercase">Absorbed Supply</span>
+                    <div class="text-2xl font-black text-slate-700 mt-1" id="absorbed-val-display">0g</div>
+                    <span class="text-[9px] text-slate-500 block mt-1">(Assuming ~35% Gut absorption)</span>
+                </div>
+            </div>
+
+            <!-- Visual Progress Balance Bar -->
+            <div class="pt-2">
+                <div class="flex justify-between text-[11px] font-semibold text-slate-600 mb-1">
+                    <span>Absorption Balance</span>
+                    <span id="balance-percentage" class="font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                    <div id="balance-bar" class="h-full bg-blue-600 transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Verdict Area -->
+        <section id="verdict-card" class="rounded-2xl p-5 shadow-sm border transition-all duration-300 mb-6">
+            <!-- Content Injected via JS -->
+        </section>
+
+        <!-- Scientific Disclaimer/Educational Box -->
+        <div class="bg-slate-100/80 border border-slate-200/50 rounded-xl p-4 text-xs text-slate-600 space-y-2">
+            <span class="font-bold text-slate-700 block uppercase tracking-wide text-[10px]">💡 The Science behind the Audit:</span>
+            <p>
+                Roughly <strong>60-65%</strong> of dietary calcium is lost in digestion and feces. Standard calcium carbonate (limestone) used by low-cost local brands cannot dissociate effectively in high-stress climates, leaving the cow severely deficient.
+            </p>
+            <p class="font-semibold text-blue-900">
+                OstoVet contains ready-made metabolic energy, highly-soluble ionic calcium, and crucial Vitamin D3/B12 catalysts to bridge the deficit.
+            </p>
+        </div>
+
+        <!-- WhatsApp Share Action Button -->
+        <button onclick="shareCalculations()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition-all mt-6 flex items-center justify-center gap-2 text-sm">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.665.988 3.311 1.485 5.353 1.486 5.517 0 10.003-4.487 10.006-10.007.001-2.673-1.036-5.186-2.922-7.076-1.886-1.88-4.394-2.916-7.067-2.917-5.524 0-10.014 4.488-10.017 10.009-.001 2.105.549 4.161 1.596 5.952l-.999 3.65 3.754-.984zm11.23-5.46c-.327-.164-1.93-.953-2.227-1.062-.298-.11-.515-.164-.73.164-.216.328-.835 1.063-1.025 1.28-.19.219-.38.246-.707.082-.327-.164-1.382-.509-2.63-1.625-.972-.867-1.628-1.939-1.819-2.266-.19-.328-.02-.505.144-.668.148-.146.327-.382.49-.573.163-.19.218-.328.327-.546.11-.218.055-.41-.027-.573-.082-.164-.73-1.76-.998-2.41-.26-.627-.525-.542-.72-.552l-.613-.012c-.218 0-.572.082-.871.41-.299.327-1.14 1.115-1.14 2.719s1.168 3.141 1.331 3.359c.163.218 2.3 3.511 5.571 4.924.778.336 1.385.537 1.859.688.782.249 1.493.214 2.055.13.627-.094 1.93-.79 2.2-1.514.271-.724.271-1.344.19-1.472-.08-.127-.297-.218-.624-.383z"/>
+            </svg>
+            Share Report on WhatsApp
+        </button>
+    </main>
+
+    <!-- Navigation Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-3 px-6 shadow-2xl z-40 max-w-md mx-auto">
+        <div class="flex justify-around items-center">
+            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="flex flex-col items-center gap-1 text-blue-900 font-bold text-xs">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                <span>Calculator</span>
+            </button>
+            <a href="https://www.ostovet.com/" target="_blank" class="flex flex-col items-center gap-1 text-slate-400 hover:text-blue-900 transition-colors text-xs font-semibold">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Product Science</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Logic Controller Script -->
+    <script>
+        function syncInput(id) {
+            const numVal = parseFloat(document.getElementById(id + '-num').value);
+            const slider = document.getElementById(id);
+            if (!isNaN(numVal) && numVal >= slider.min && numVal <= slider.max) {
+                slider.value = numVal;
+                calculateMetabolics();
+            }
+        }
+
+        function calculateMetabolics() {
+            // Get raw input values
+            const weight = parseFloat(document.getElementById('weight').value);
+            const milkYield = parseFloat(document.getElementById('yield').value);
+            const concentrate = parseFloat(document.getElementById('conc').value);
+            const fodder = parseFloat(document.getElementById('fodder').value);
+
+            // Update range labels
+            document.getElementById('weight-val').innerText = weight + " kg";
+            document.getElementById('weight-num').value = weight;
+
+            document.getElementById('yield-val').innerText = milkYield + " L";
+            document.getElementById('yield-num').value = milkYield;
+
+            document.getElementById('conc-val').innerText = concentrate + " kg";
+            document.getElementById('conc-num').value = concentrate;
+
+            document.getElementById('fodder-val').innerText = fodder + " kg";
+            document.getElementById('fodder-num').value = fodder;
+
+            // Biological Formulas
+            // Required Calcium (absorbed net physiological need)
+            const requiredAbsorbed = (weight * 0.03) + (milkYield * 1.22); 
+            
+            // Raw Dietary Calcium Intake (rough estimation based on typical feed specs)
+            const totalDietaryIntake = (concentrate * 8) + (fodder * 2.5);
+
+            // True absorbed feed supply (Assuming standard un-catalyzed absorption ~ 35%)
+            const absorptionEfficiency = 0.35;
+            const absorbedSupply = totalDietaryIntake * absorptionEfficiency;
+
+            // Gap calculation (Net Absorbed basis)
+            const deficitGap = requiredAbsorbed - absorbedSupply;
+
+            // Set Values on UI
+            document.getElementById('required-val-display').innerText = requiredAbsorbed.toFixed(1) + "g";
+            document.getElementById('absorbed-val-display').innerText = absorbedSupply.toFixed(1) + "g";
+
+            // Visual balance bar logic
+            const balancePercentage = Math.min((absorbedSupply / requiredAbsorbed) * 100, 100);
+            document.getElementById('balance-percentage').innerText = balancePercentage.toFixed(0) + "%";
+            
+            const bar = document.getElementById('balance-bar');
+            bar.style.width = balancePercentage + "%";
+
+            // Color adjustments for bar
+            if (balancePercentage < 65) {
+                bar.className = "h-full bg-red-500 transition-all duration-300";
+            } else if (balancePercentage < 90) {
+                bar.className = "h-full bg-amber-500 transition-all duration-300";
+            } else {
+                bar.className = "h-full bg-emerald-500 transition-all duration-300";
+            }
+
+            // Ingest UI Verdict Template
+            const verdictCard = document.getElementById('verdict-card');
+            
+            if (deficitGap > 0) {
+                verdictCard.className = "rounded-2xl p-5 shadow-sm border border-red-200 bg-red-50/75 transition-all duration-300 mb-6";
+                verdictCard.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">⚠️</span>
+                        <div>
+                            <h3 class="text-red-950 font-black text-sm uppercase tracking-wide">Metabolic Deficit Detected</h3>
+                            <p class="text-xs text-red-900/90 mt-1 leading-relaxed">
+                                This cow is facing a daily systemic deficit of <strong class="text-red-700">${deficitGap.toFixed(1)}g</strong> of absorbed calcium. This gap forces her to extract calcium directly from her bones, risking immediate bone-fever and production drop.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-red-200/50">
+                        <div class="bg-white rounded-xl p-3 border border-red-200/50">
+                            <span class="text-[10px] font-bold text-emerald-700 block uppercase tracking-wide mb-1">💡 OstoVet Action Protocol:</span>
+                            <p class="text-xs text-slate-700 leading-normal">
+                                Prescribe <strong>100ml OstoVet daily</strong>. OstoVet's Vitamin D3 unlocks up to 40% additional calcium absorption directly from her dry fodder, bridging this gap. The embedded Energy and Vitamin B12 safeguard her liver metabolism.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                verdictCard.className = "rounded-2xl p-5 shadow-sm border border-emerald-200 bg-emerald-50/75 transition-all duration-300 mb-6";
+                verdictCard.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl">✅</span>
+                        <div>
+                            <h3 class="text-emerald-950 font-black text-sm uppercase tracking-wide">Calcium Level Stable</h3>
+                            <p class="text-xs text-emerald-900/90 mt-1 leading-relaxed">
+                                Excellent! The animal's current nutritional supply matches or slightly exceeds her calculated biological demands.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-emerald-200/50">
+                        <div class="bg-white rounded-xl p-3 border border-emerald-200/50 text-xs text-slate-700">
+                            <strong>Maintenance Note:</strong> To sustain this peak lactation curve without liver stress, maintain regular OstoVet trace mineral supplementation. Don't compromise on her energy reserve.
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function shareCalculations() {
+            const weight = document.getElementById('weight').value;
+            const milkYield = document.getElementById('yield').value;
+            const required = document.getElementById('required-val-display').innerText;
+            const absorbed = document.getElementById('absorbed-val-display').innerText;
+            
+            const message = encodeURIComponent(
+                `*OstoVet Metabolic Field Audit*\n` +
+                `---------------------------------\n` +
+                `• Cow Weight: ${weight} kg\n` +
+                `• Milk Yield: ${milkYield} L/day\n` +
+                `• Required Abs. Calcium: ${required}\n` +
+                `• Current Abs. Intake: ${absorbed}\n` +
+                `---------------------------------\n` +
+                `👉 *Verdict:* Un-catalyzed calcium carbonate feed causes absorption loss. Bridge the metabolic deficit with 100ml OstoVet daily!\n\n` +
+                `*Calcium nahi, OstoVet dijiye!*`
+            );
+            
+            window.open(`https://api.whatsapp.com/send?text=${message}`);
+        }
+
+        // Run calculation once on launch
+        window.onload = calculateMetabolics;
+    </script>
+</body>
+</html>
+
